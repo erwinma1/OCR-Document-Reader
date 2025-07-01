@@ -58,23 +58,22 @@ for file in os.listdir(pdf_folder):
             print(f"❌ Failed to open {file}: {e}")
             continue
 
-        found = False  # 🔁 Flag to break both loops
+        found_terms = set()
 
         for page_num, img in enumerate(images, start=1):
-            if found:
-                break
-
             results = reader.readtext(np.array(img))
+
             for (_, text, _) in results:
-                lower_text = text.lower()
-                if any(term in lower_text for term in search_terms):
-                    print(f"✅ Found in {file} on page {page_num}: {text}")
-                    matches.append((file, page_num, text))
-                    found = True
-                    break  # 🔁 Exit inner loop after match
+                lower_text = text.lower().strip()
+
+                for term in search_terms:
+                    if term in lower_text and term not in found_terms:
+                        print(f"✅ Found {term} in {file} on page {page_num}: {text}")
+                        matches.append((file, page_num, term, text))
+                        found_terms.add(term)
 
 #Write to Excel
-df = pd.DataFrame(matches, columns=["File_Name", "Page", "Docket"])
+df = pd.DataFrame(matches, columns=["File_Name", "Page", "Docket", "Text"])
 
 df.to_excel(write_path, index=False)
 df.to_excel(write_path2, index=False)
