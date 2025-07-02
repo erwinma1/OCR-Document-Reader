@@ -43,41 +43,46 @@ search_terms = [term.lower() for term in search_terms]
 ##################### Search Files for Match #####################
 ##################################################################
 matches = []
-all_text = []
+start_time = time.time()
 
-file_start = time.time()
+#Start search logic
 
 for file in os.listdir(pdf_folder):
-    if file.lower().endswith('.pdf'):
-        pdf_path = os.path.join(pdf_folder, file)
-        print(f"\n📄 Scanning file: {file}")
+    if not file.lower().endswith('.pdf') or not remaining_terms:
+        continue
 
-        try:
-            images = convert_from_path(pdf_path, poppler_path=poppler_bin)
-        except Exception as e:
-            print(f"❌ Failed to open {file}: {e}")
-            continue
+    pdf_path = os.path.join(pdf_folder, file)
+    print(f"\n📄 Scanning file: {file}")
 
-        found_terms = set()
+    try:
+        images = convert_from_path(pdf_path, poppler_path=poppler_bin, dpi=300)
+    except Exception as e:
+        print(f"❌ Failed to open {file}: {e}")
+        continue
 
-        for page_num, img in enumerate(images, start=1):
-            results = reader.readtext(np.array(img))
+    for page_num, img in enumerate(images, start=1):
+        results = reader.readtext(np.array(img))
+        text_on_page = " ".join([t[1] for t in results]).upper()
 
-            for (_, text, _) in results:
-                lower_text = text.lower().strip()
+        for term in list(remaining_terms):
+            if term in text_on_page:
+                print(f"✅ Found {term} in {file} on page {page_num}")
+                matches.append((file, page_num, term))
+                remaining_terms.remove(term)
+                break  # You could break here if you want to skip the rest of the page
 
-                for term in search_terms:
-                    if term in lower_text and term not in found_terms:
-                        print(f"✅ Found {term} in {file} on page {page_num}: {text}")
-                        matches.append((file, page_num, term, text))
-                        found_terms.add(term)
+        if not remaining_terms:
+            break  # All terms found — exit early
 
-#Write to Excel
-df = pd.DataFrame(matches, columns=["File_Name", "Page", "Docket", "Text"])
 
+##################################################################
+######################### Write to Excel #########################
+##################################################################
+# ---- Output ----
+df = pd.DataFrame(matches, columns=["File_Name", "Page", "Docket"])
 df.to_excel(write_path, index=False)
 df.to_excel(write_path2, index=False)
 
-#get run time
-file_duration = time.time() - file_start
-print(f"⏱️ Finished {file} in {file_duration:.2f} seconds")
+print(f"\n⏱️ Finished search in {time.time() - start_time:.2f} seconds")
+
+
