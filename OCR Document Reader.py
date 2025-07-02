@@ -19,14 +19,14 @@ import re
 import openpyxl
 
 #Use poppler package
-poppler_bin = 'C:/Users/ema/Documents/poppler pdf reader/poppler-24.08.0/Library/bin'
+poppler_bin = ''file_path/poppler pdf reader/poppler-24.08.0/Library/bin'
 
 #pdf file path
-pdf_folder = 'C:/Users/ema/PycharmProjects/OCR Docket Reader/Dockets PDFs/BK/05-30-2025/Part FD'
+pdf_folder = 'file_path'
 
 #write_path
-write_path = 'C:/Users/ema/Documents/PycharmProjects/OCR Docket Reader/Outputs/search ACD BK 05-30-2025 pt1.xlsx'
-write_path2 = 'C:/Users/ema/Projects/search ACD BK 05-30-2025 pt1.xlsx'
+write_path = 'file_path'
+write_path2 = 'file_path'
 
 #set reader in english
 reader = easyocr.Reader(['en'])
