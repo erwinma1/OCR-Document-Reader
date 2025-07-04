@@ -37,7 +37,7 @@ reader = easyocr.Reader(['en'])
 
 search_terms = ['John Doe', 'Jane Doe']
 
-search_terms = [term.lower() for term in search_terms]
+remaining_terms = [term.lower() for term in search_terms]
 
 ##################################################################
 ##################### Search Files for Match #####################
