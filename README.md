@@ -14,3 +14,6 @@ Methodology
 4. Run the search and return the file, page, and the term that was found.
 5. Review those documents and record what took place.
 
+Results
+
+The project is able to successfully scan the pdf documents and retrieve the location of the search terms. 
